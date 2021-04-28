@@ -120,20 +120,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Point2D.cpp" />
+    <ClCompile Include="Line2D.cpp" />
     <ClCompile Include="GraphicsForm.cpp" />
+    <ClCompile Include="Interface.cpp" />
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="TSPSolver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Point2D.h" />
+    <ClInclude Include="Line2D.h" />
     <ClInclude Include="GraphicsForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="Interface.h" />
     <ClInclude Include="MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="TSPSolver.h" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="GraphicsForm.resx">
+      <DependentUpon>GraphicsForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.h</DependentUpon>
     </EmbeddedResource>

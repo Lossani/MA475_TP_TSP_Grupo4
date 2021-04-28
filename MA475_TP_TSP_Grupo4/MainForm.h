@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TSPSolver.h"
+#include "GraphicsForm.h"
 #include <vector>
 
 namespace MA475TPTSPGrupo4 {
@@ -43,6 +44,7 @@ namespace MA475TPTSPGrupo4 {
 	private: System::Windows::Forms::Label^ lblNewNodeName;
 	private: System::Windows::Forms::Button^ btnResetNodeData;
 	private: System::Windows::Forms::Button^ btnSolveBruteForce;
+	private: System::Windows::Forms::Button^ button1;
 	protected:
 
 	protected:
@@ -66,6 +68,7 @@ namespace MA475TPTSPGrupo4 {
 			this->lblNewNodeName = (gcnew System::Windows::Forms::Label());
 			this->btnResetNodeData = (gcnew System::Windows::Forms::Button());
 			this->btnSolveBruteForce = (gcnew System::Windows::Forms::Button());
+			this->button1 = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridNodesData))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -125,11 +128,22 @@ namespace MA475TPTSPGrupo4 {
 			this->btnSolveBruteForce->UseVisualStyleBackColor = true;
 			this->btnSolveBruteForce->Click += gcnew System::EventHandler(this, &MainForm::btnSolveBruteForce_Click);
 			// 
+			// button1
+			// 
+			this->button1->Location = System::Drawing::Point(343, 473);
+			this->button1->Name = L"button1";
+			this->button1->Size = System::Drawing::Size(98, 38);
+			this->button1->TabIndex = 6;
+			this->button1->Text = L"button1";
+			this->button1->UseVisualStyleBackColor = true;
+			this->button1->Click += gcnew System::EventHandler(this, &MainForm::button1_Click);
+			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(744, 521);
+			this->Controls->Add(this->button1);
 			this->Controls->Add(this->btnSolveBruteForce);
 			this->Controls->Add(this->btnResetNodeData);
 			this->Controls->Add(this->lblNewNodeName);
@@ -216,6 +230,10 @@ private: System::Void btnSolveBruteForce_Click(System::Object^ sender, System::E
 
 		break;
 	}
+}
+private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
+	Form^ graphicsForm = gcnew GraphicsForm();
+	graphicsForm->Show();
 }
 };
 }
