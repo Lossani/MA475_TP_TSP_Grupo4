@@ -4,12 +4,16 @@
 #define __LINE2D_H__
 
 #include "Point2D.h"
+#include <cmath>
+
+using namespace System;
+using namespace System::Drawing;
 
 class Line2D
 {
 private:
-	Point2D point1;
-	Point2D point2;
+	Point2D point1 = Point2D(0, 0);
+	Point2D point2 = Point2D(0, 0);
 
 public:
 	Line2D(float x1, float y1, float x2, float y2);
@@ -30,7 +34,8 @@ public:
 	float get_medium_x();
 	float get_medium_y();
 
-	virtual void draw();
+	virtual void draw(Graphics^ graphics);
+	virtual void draw(Graphics^ graphics, String^ caption);
 };
 
 #endif

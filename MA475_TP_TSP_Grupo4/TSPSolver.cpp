@@ -1,11 +1,11 @@
 #include "TSPSolver.h"
 
-int TSPSolver::bruteForce(int initPoint)
+int TSPSolver::brute_force(int init_point)
 {
     // store all vertex apart from source vertex
     vector<int> vertex;
     for (int i = 0; i < nodes.size(); i++)
-        if (i != initPoint)
+        if (i != init_point)
             vertex.push_back(i);
 
     // store minimum weight Hamiltonian Cycle.
@@ -14,18 +14,18 @@ int TSPSolver::bruteForce(int initPoint)
     vector<int> currentRoute;
     do {
         currentRoute.clear();
-        currentRoute.push_back(initPoint);
+        currentRoute.push_back(init_point);
         // store current Path weight(cost)
         int current_pathweight = 0;
 
         // compute current path weight
-        int k = initPoint;
+        int k = init_point;
         for (int i = 0; i < vertex.size(); i++) {
             current_pathweight += nodes[k][vertex[i]];
             k = vertex[i];
             currentRoute.push_back(k);
         }
-        current_pathweight += nodes[k][initPoint];
+        current_pathweight += nodes[k][init_point];
 
         // update minimum
         //min_path = min(min_path, current_pathweight);
@@ -33,7 +33,11 @@ int TSPSolver::bruteForce(int initPoint)
         if (current_pathweight < min_path)
         {
             min_path = current_pathweight;
-            optimalRoute = currentRoute;
+            optimal_routes.push_back(currentRoute);
+        }
+        else if (current_pathweight == min_path)
+        {
+            optimal_routes.push_back(currentRoute);
         }
 
     } while (
@@ -42,7 +46,11 @@ int TSPSolver::bruteForce(int initPoint)
     return min_path;
 }
 
-TSPSolver::TSPSolver(vector<vector<int>> nodeData) : nodes(nodeData)
+TSPSolver::TSPSolver()
+{
+}
+
+TSPSolver::TSPSolver(vector<vector<int>> node_data) : nodes(node_data)
 {
 
 }
@@ -52,22 +60,24 @@ TSPSolver::~TSPSolver()
     nodes.clear();
 }
 
-void TSPSolver::setNodes(vector<vector<int>> nodeData)
+void TSPSolver::set_nodes(vector<vector<int>> node_data)
 {
-    nodes = nodeData;
+    nodes = node_data;
+    optimal_routes_cost = 0;
+    optimal_routes = vector<vector<int>>();
 }
 
-void TSPSolver::solveBruteForce()
+void TSPSolver::solve_brute_force(int init_node)
 {
-    routeCost = bruteForce(0);
+    optimal_routes_cost = brute_force(init_node);
 }
 
-vector<int> TSPSolver::getOptimalRouteResult()
+vector<vector<int>> TSPSolver::get_optimal_routes_result()
 {
-    return optimalRoute;
+    return optimal_routes;
 }
 
-int TSPSolver::getRouteCostResult()
+int TSPSolver::get_optimal_routes_cost()
 {
-    return routeCost;
+    return optimal_routes_cost;
 }

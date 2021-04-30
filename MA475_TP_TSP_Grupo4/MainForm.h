@@ -210,21 +210,24 @@ private: System::Void btnSolveBruteForce_Click(System::Object^ sender, System::E
 
 		TSPSolver* solver = new TSPSolver(nodeData);
 
-		solver->solveBruteForce();
+		solver->solve_brute_force(0);
 
-		vector<int> resultRoute = solver->getOptimalRouteResult();
-		int resultCost = solver->getRouteCostResult();
+		vector<vector<int>> result_routes = solver->get_optimal_routes_result();
+		int result_route_cost = solver->get_optimal_routes_cost();
 
-		MessageBox::Show("Costo de la ruta optima: " + resultCost);
+		MessageBox::Show("Costo de la ruta optima: " + result_route_cost);
 
 		String^ result = "";
 
-		for (int node : resultRoute)
+		for (int i = 0; i < result_routes.size(); ++i)
 		{
-			result += node + " -> ";
-		}
+			for (int node : result_routes[i])
+			{
+				result += node + " -> ";
+			}
 
-		result += "0";
+			result += "0\n";
+		}
 
 		MessageBox::Show(result);
 

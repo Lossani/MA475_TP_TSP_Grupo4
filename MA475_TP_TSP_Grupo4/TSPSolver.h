@@ -12,19 +12,20 @@ class TSPSolver
 {
 private:
 	vector<vector<int>> nodes;
-	vector<int> optimalRoute;
-	int routeCost = -1;
+	vector<vector<int>> optimal_routes = vector<vector<int>>();
+	int optimal_routes_cost = 0;
 
-	int bruteForce(int initPoint);
+	int brute_force(int initPoint);
 public:
-	TSPSolver(vector<vector<int>> nodeData);
+	TSPSolver();
+	TSPSolver(vector<vector<int>> node_data);
 	~TSPSolver();
 
-	void setNodes(vector<vector<int>> nodeData);
-	void solveBruteForce();
+	void set_nodes(vector<vector<int>> node_data);
+	void solve_brute_force(int init_point);
 
-	vector<int> getOptimalRouteResult();
-	int getRouteCostResult();
+	vector<vector<int>> get_optimal_routes_result();
+	int get_optimal_routes_cost();
 };
 
 #endif

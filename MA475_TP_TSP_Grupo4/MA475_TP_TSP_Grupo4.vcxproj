@@ -120,6 +120,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="NodePointer2D.cpp" />
     <ClCompile Include="Point2D.cpp" />
     <ClCompile Include="Line2D.cpp" />
     <ClCompile Include="GraphicsForm.cpp" />
@@ -128,6 +129,7 @@
     <ClCompile Include="TSPSolver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="NodePointer2D.h" />
     <ClInclude Include="Point2D.h" />
     <ClInclude Include="Line2D.h" />
     <ClInclude Include="GraphicsForm.h">
