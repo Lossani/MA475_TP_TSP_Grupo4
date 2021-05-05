@@ -538,7 +538,8 @@ private: System::Void btnDeleteNode_Click(System::Object^ sender, System::EventA
 		return;
 
 	dataGridNodesData->Columns->RemoveAt(comboBoxDeleteNode->SelectedIndex);
-	dataGridNodesData->Rows->RemoveAt(comboBoxDeleteNode->SelectedIndex);
+	if (dataGridNodesData->Rows->Count > 0)
+		dataGridNodesData->Rows->RemoveAt(comboBoxDeleteNode->SelectedIndex);
 	main_interface->delete_node(comboBoxDeleteNode->SelectedIndex);
 	update_solver_nodes();
 	update_combobox_node_list();

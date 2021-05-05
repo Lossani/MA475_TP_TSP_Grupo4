@@ -441,7 +441,7 @@ void TSPSolver::solve_branch_and_bound_method(int init_point)
     // We start at vertex 1 so the first vertex
     // in curr_path[] is 0
     visited[init_point] = true;
-    current_path[init_point] = 0;
+    current_path[0] = init_point;
 
     // Call to TSPRec for curr_weight equal to
     // 0 and level 1
