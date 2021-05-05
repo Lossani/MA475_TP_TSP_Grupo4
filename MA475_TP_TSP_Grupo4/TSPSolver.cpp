@@ -135,12 +135,12 @@ void TSPSolver::threaded_brute_force(int init_point)
 
     uint64_t current_index = 0;
     // Simple factorial to get total permutations number
-    int total_permutations = 1;
+    uint64_t total_permutations = 1;
     for (int i = 1; i <= nodes.size() - 1; ++i)
         total_permutations *= i;
 
-    int times_per_thread = total_permutations / threads;
-    int last_thread = times_per_thread;
+    uint64_t times_per_thread = total_permutations / threads;
+    uint64_t last_thread = times_per_thread;
 
     if (times_per_thread * threads != total_permutations)
     {
@@ -161,7 +161,7 @@ void TSPSolver::threaded_brute_force(int init_point)
                 current_permutation[j]++;
         }
 
-        int current_thread_times;
+        uint64_t current_thread_times;
         if (i != threads - 1)
         {
             current_thread_times = times_per_thread;
