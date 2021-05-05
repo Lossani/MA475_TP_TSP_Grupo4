@@ -640,7 +640,16 @@ private: System::Void btnSolve_Click(System::Object^ sender, System::EventArgs^ 
 		if (cBLimitComputingTime->Checked)
 		{
 			solver->limit_computing_time = true;
-			solver->limit_time = Convert::ToInt32(txtMaxComputingTime->Text);
+
+			int time = Convert::ToInt32(txtMaxComputingTime->Text);
+
+			if (time < 1000)
+			{
+				MessageBox::Show("Se permite desde 1000 ms de tiempo de cómputo a más.");
+				return;
+			}
+
+			solver->limit_time = time;
 		}
 		else
 		{

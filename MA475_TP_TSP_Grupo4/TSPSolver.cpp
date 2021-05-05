@@ -177,6 +177,8 @@ void TSPSolver::threaded_brute_force(int init_point)
             {
                 next_permutation(current_permutation.begin(), current_permutation.end());
                 evaluate_permutation(current_permutation, init_point, threads_min_path[i], threads_paths[i]);
+                if (!chrono_checker())
+                    return;
             }
             }));
 
