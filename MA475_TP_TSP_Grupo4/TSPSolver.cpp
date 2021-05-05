@@ -448,74 +448,35 @@ void TSPSolver::solve_branch_and_bound_method(int init_point)
     branch_and_bound_method(current_bound, 0, 1, current_path);
 }
 
+void evaluate_branches(T_NODE subtree, vector<int>& path, int origin, int previous_origin = -1)
+{
+    for (int i = 0; i < subtree.size(); ++i)
+    {
+        if (origin != i && previous_origin != i && subtree[origin][i] != -1)
+        {      
+            path.push_back(i);
+            evaluate_branches(subtree, path, i, origin);
+        }
+    }
+}
 void TSPSolver::solve_approximated_prim_method(int init_point)
 {
     start_time = chrono::system_clock::now();
 
     vector<vector<int>> tree = prim();
     vector<vector<int>> paths;
+    vector<int> path(1);
 
-    for (int i = 0; i < tree.size(); ++i)
-    {
-        if (i != 0 && tree[init_point][i] != -1)
-        {
-            paths.push_back(vector<int>());
-
-            paths[paths.size() - 1].push_back(i);
-
-            bool keep_searching = true;
-            int origin = init_point;
-            int target = i;
-
-            while (keep_searching)
-            {
-                keep_searching = false;
-                for (int j = 0; j < tree.size(); ++j)
-                {
-                    if (origin != j && tree[target][j] != -1)
-                    {
-                        keep_searching = true;
-                        origin = target;
-                        target = j;
-                        paths[paths.size() - 1].push_back(j);
-                    }
-                }
-            }
-        }
-    }
+    evaluate_branches(tree, path, init_point);
 
     optimal_routes.clear();
     optimal_routes.push_back(vector<int>());
+
+    for (int node : path)
+    {
+        optimal_routes[0].push_back(node);
+    }
     optimal_routes[0].push_back(init_point);
-
-    // Si tenemos varios caminos debemos fusionarlos para dar el camino final.
-    if (paths.size() > 1)
-    {
-        for (int j = 0; j < paths[0].size(); ++j)
-        {
-            optimal_routes[0].push_back(paths[0][j]);
-        }
-        for (int i = 1; i < paths.size(); ++i)
-        {
-            for (int j = paths[i].size() - 1; j >= 0; --j)
-            {
-                optimal_routes[0].push_back(paths[i][j]);
-            }
-        }
-
-        optimal_routes[0].push_back(init_point);
-    }
-    else
-    {
-        optimal_routes.clear();
-        optimal_routes.push_back(vector<int>());
-        optimal_routes[0].push_back(init_point);
-        for (int path : paths[0])
-        {
-            optimal_routes[0].push_back(path);
-        }
-        optimal_routes[0].push_back(init_point);
-    }
 
     // Calculating final path cost
 
