@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Interface.h"
+#include "MainForm.h"
+#include <functional>
+
+#define T_NODE vector<vector<int>>
 
 namespace MA475TPTSPGrupo4 {
 
@@ -16,8 +20,6 @@ namespace MA475TPTSPGrupo4 {
 	/// </summary>
 	public ref class GraphicsForm : public System::Windows::Forms::Form
 	{
-	private:
-		BufferedGraphics^ buffer;
 	private: System::Windows::Forms::Button^ btnAddNode;
 	private: System::Windows::Forms::Button^ btnUndoNode;
 	private: System::Windows::Forms::PictureBox^ pBGraphicNodes;
@@ -25,7 +27,20 @@ namespace MA475TPTSPGrupo4 {
 
 
 		   Interface^ interface;
+		   BufferedGraphics^ buffer;
+		   Form^ parent;
 	public:
+		GraphicsForm(Interface^ interface_instance, Form^ parent_form) : interface(interface_instance), parent(parent_form)
+		{
+			InitializeComponent();
+			pBGraphicNodes->SetBounds(0, 80, this->Bounds.Right, this->Bounds.Bottom - 80);
+			buffer = BufferedGraphicsManager::Current->Allocate(pBGraphicNodes->CreateGraphics(), pBGraphicNodes->ClientRectangle);
+			//interface = gcnew Interface;
+			//
+			//TODO: agregar código de constructor aquí
+			//
+		}
+
 		GraphicsForm(void)
 		{
 			InitializeComponent();
@@ -48,7 +63,9 @@ namespace MA475TPTSPGrupo4 {
 				delete components;
 			}
 		}
-	private: System::Windows::Forms::Timer^ timer1;
+	private: System::Windows::Forms::Timer^ drawingTimer;
+	protected:
+
 	protected:
 	private: System::ComponentModel::IContainer^ components;
 
@@ -66,7 +83,7 @@ namespace MA475TPTSPGrupo4 {
 		void InitializeComponent(void)
 		{
 			this->components = (gcnew System::ComponentModel::Container());
-			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
+			this->drawingTimer = (gcnew System::Windows::Forms::Timer(this->components));
 			this->btnAddNode = (gcnew System::Windows::Forms::Button());
 			this->btnUndoNode = (gcnew System::Windows::Forms::Button());
 			this->btnCalculateRoute = (gcnew System::Windows::Forms::Button());
@@ -74,10 +91,11 @@ namespace MA475TPTSPGrupo4 {
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pBGraphicNodes))->BeginInit();
 			this->SuspendLayout();
 			// 
-			// timer1
+			// drawingTimer
 			// 
-			this->timer1->Enabled = true;
-			this->timer1->Tick += gcnew System::EventHandler(this, &GraphicsForm::timer1_Tick);
+			this->drawingTimer->Enabled = true;
+			this->drawingTimer->Interval = 30;
+			this->drawingTimer->Tick += gcnew System::EventHandler(this, &GraphicsForm::drawingTimer_Tick);
 			// 
 			// btnAddNode
 			// 
@@ -110,6 +128,7 @@ namespace MA475TPTSPGrupo4 {
 			this->btnCalculateRoute->TabIndex = 2;
 			this->btnCalculateRoute->Text = L"Calcular Ruta Optima";
 			this->btnCalculateRoute->UseVisualStyleBackColor = true;
+			this->btnCalculateRoute->Visible = false;
 			this->btnCalculateRoute->Click += gcnew System::EventHandler(this, &GraphicsForm::btnCalculateRoute_Click);
 			// 
 			// pBGraphicNodes
@@ -133,7 +152,9 @@ namespace MA475TPTSPGrupo4 {
 			this->Controls->Add(this->btnUndoNode);
 			this->Controls->Add(this->btnAddNode);
 			this->Name = L"GraphicsForm";
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"GraphicsForm";
+			this->Load += gcnew System::EventHandler(this, &GraphicsForm::GraphicsForm_Load);
 			this->ResizeEnd += gcnew System::EventHandler(this, &GraphicsForm::GraphicsForm_ResizeEnd);
 			this->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &GraphicsForm::GraphicsForm_MouseClick);
 			this->MouseMove += gcnew System::Windows::Forms::MouseEventHandler(this, &GraphicsForm::GraphicsForm_MouseMove);
@@ -144,7 +165,11 @@ namespace MA475TPTSPGrupo4 {
 
 		}
 #pragma endregion
-	private: System::Void timer1_Tick(System::Object^ sender, System::EventArgs^ e) {
+		private:
+
+			void update_node_table();
+
+	private: System::Void drawingTimer_Tick(System::Object^ sender, System::EventArgs^ e) {
 		buffer->Graphics->Clear(Color::DarkGray);
 		interface->draw(buffer->Graphics);
 		buffer->Render();
@@ -160,15 +185,20 @@ namespace MA475TPTSPGrupo4 {
 	}
 private: System::Void btnUndoNode_Click(System::Object^ sender, System::EventArgs^ e) {
 	interface->delete_last_node();
+	update_node_table();
 }
 private: System::Void btnCalculateRoute_Click(System::Object^ sender, System::EventArgs^ e) {
 	interface->solve_with_brute_force();
+	//interface->solve_with_dynamic_programming_method();
+	//interface->solve_with_branch_and_bound_method();
+	interface->solve_test();
 }
 private: System::Void pBGraphicNodes_MouseMove(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
 	interface->drawer_iterator(buffer->Graphics, e->X, e->Y, false);
 }
 private: System::Void pBGraphicNodes_MouseClick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
 	interface->drawer_iterator(buffer->Graphics, e->X, e->Y, true);
+	update_node_table();
 }
 private: System::Void GraphicsForm_Resize(System::Object^ sender, System::EventArgs^ e) {
 }
@@ -176,6 +206,9 @@ private: System::Void GraphicsForm_ResizeEnd(System::Object^ sender, System::Eve
 	pBGraphicNodes->SetBounds(0, 80, this->Bounds.Right, this->Bounds.Bottom - 80);
 
 	buffer = BufferedGraphicsManager::Current->Allocate(pBGraphicNodes->CreateGraphics(), pBGraphicNodes->ClientRectangle);
+}
+private: System::Void GraphicsForm_Load(System::Object^ sender, System::EventArgs^ e) {
+	this->ControlBox = false;
 }
 };
 }

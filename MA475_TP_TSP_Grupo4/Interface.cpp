@@ -1,18 +1,11 @@
 #include "Interface.h"
+#include "MainForm.h"
 
 Interface::Interface()
 {
 	nodes = new vector<Point2D*>;
 	routes = new vector<Line2D*>;
-	texto = gcnew String(" ");
-
-	Zona = Rectangle(170, 80, 600, 500);
-	titulo = Rectangle(0, 0, 750, 80);
-	x = 0; y = 0;
-	R = 100, G = 50, B = 50;
-	dR = 2, dG = 2, dB = 2;
-
-	click = false;
+	solver = new TSPSolver();
 }
 
 Interface::~Interface()
@@ -30,6 +23,12 @@ Interface::~Interface()
 	}
 	
 	delete routes;
+}
+
+Interface::Interface(TSPSolver* solver_instance) : solver(solver_instance)
+{
+	nodes = new vector<Point2D*>;
+	routes = new vector<Line2D*>;
 }
 
 void Interface::draw(Graphics^ graphics)
@@ -76,6 +75,8 @@ void Interface::draw_routes()
 	vector<int> row(nodes->size());
 	vector<vector<int>> table(nodes->size(), row);
 
+	routes->clear();
+
 	for (int i = 0; i < nodes->size(); ++i)
 	{
 		if (i > 0)
@@ -84,7 +85,7 @@ void Interface::draw_routes()
 			{
 				Line2D* route = new_route((*nodes)[i]->x, (*nodes)[i]->y, (*nodes)[j]->x, (*nodes)[j]->y);
 
-				table[i][j] = route->distance();
+				table[i][j] = roundf(route->distance());
 				table[j][i] = table[i][j];
 			}
 		}
@@ -124,6 +125,15 @@ void Interface::drawer_iterator(Graphics^ graphics, int x, int y, bool is_click)
 	draw(graphics);
 }
 
+void Interface::delete_node(int index)
+{
+	if (nodes->size() > 0)
+	{
+		nodes->erase(nodes->begin() + index);
+		draw_routes();
+	}
+}
+
 void Interface::new_node()
 {
 	new_node(0, 0);
@@ -157,13 +167,91 @@ void Interface::solve_with_brute_force()
 	{
 		for (int node : result_routes[i])
 		{
-			result += node + " -> ";
+			result += (node + 1) + " -> ";
 		}
 
-		result += "0\n";
+		result += "1\n";
 	}
 
 	MessageBox::Show(result);
+}
+
+void Interface::solve_with_dynamic_programming_method()
+{
+	solver->set_nodes(*node_table);
+	solver->solve_dynamic_programming_method(0);
+
+	vector<vector<int>> result_routes = solver->get_optimal_routes_result();
+	int result_route_cost = solver->get_optimal_routes_cost();
+
+	MessageBox::Show("Costo de la ruta o rutas optima(s): " + result_route_cost);
+
+	String^ result = "";
+
+	for (int i = 0; i < result_routes.size(); ++i)
+	{
+		for (int j = 0; j < result_routes[i].size(); ++j)
+		{
+			if (j != result_routes[i].size() - 1)
+				result += (result_routes[i][j] + 1) + " -> ";
+			else
+				result += (result_routes[i][j] + 1);
+		}
+	}
+
+	MessageBox::Show(result);
+}
+
+void Interface::solve_with_branch_and_bound_method()
+{
+	solver->set_nodes(*node_table);
+	solver->solve_branch_and_bound_method(0);
+
+	vector<vector<int>> result_routes = solver->get_optimal_routes_result();
+	int result_route_cost = solver->get_optimal_routes_cost();
+
+	MessageBox::Show("Costo de la ruta o rutas optima(s): " + result_route_cost);
+
+	String^ result = "";
+
+	for (int i = 0; i < result_routes.size(); ++i)
+	{
+		for (int j = 0; j < result_routes[i].size(); ++j)
+		{
+			if (j != result_routes[i].size() - 1)
+				result += (result_routes[i][j] + 1) + " -> ";
+			else
+				result += (result_routes[i][j] + 1);
+		}
+	}
+
+	MessageBox::Show(result);
+}
+
+void Interface::solve_test()
+{
+	solver->set_nodes(*node_table);
+	solver->solve_approximated_prim_method(0);
+
+	vector<vector<int>> result_routes = solver->get_optimal_routes_result();
+	int result_route_cost = solver->get_optimal_routes_cost();
+
+	MessageBox::Show("Costo de la ruta o rutas optima(s): " + result_route_cost);
+
+	String^ result = "";
+
+	for (int i = 0; i < result_routes.size(); ++i)
+	{
+		for (int j = 0; j < result_routes[i].size(); ++j)
+		{
+			if (j != result_routes[i].size() - 1)
+				result += (result_routes[i][j] + 1) + " -> ";
+			else
+				result += (result_routes[i][j] + 1);
+		}
+	}
+
+	MessageBox::Show("solver: " + result);
 }
 
 void Interface::set_node_position(int node_index, float x, float y)
@@ -173,4 +261,15 @@ void Interface::set_node_position(int node_index, float x, float y)
 		(*nodes)[node_index]->x = x;
 		(*nodes)[node_index]->y = y;
 	}
+}
+
+void Interface::reset_nodes()
+{
+	nodes->clear();
+	routes->clear();
+}
+
+vector<vector<int>> Interface::get_nodes()
+{
+	return *node_table;
 }

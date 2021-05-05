@@ -23,20 +23,14 @@ using namespace std;
 
 #define node_radius 10
 
-ref class Interface
+public ref class Interface
 {
 private:
 	vector<vector<int>>* node_table = new vector<vector<int>>(0, vector<int>(0, 0));
 
-	bool click;
-	int x, y;
-	int R, G, B;
-	int dR, dG, dB;
 	vector<Point2D*>* nodes;
 	vector<Line2D*>* routes;
 
-	Rectangle Zona;
-	Rectangle titulo;
 	NodePointer2D* init_node_pointer;
 	NodePointer2D* finish_node_pointer;
 	String^ texto;
@@ -44,9 +38,11 @@ private:
 	bool following_node_on = false;
 	int node_to_follow = -1;
 
-	TSPSolver* solver = new TSPSolver();
+	TSPSolver* solver;
+
 public:
 	Interface();
+	Interface(TSPSolver* solver_instance);
 	~Interface();
 
 	void draw(Graphics^ graphics);
@@ -63,11 +59,23 @@ public:
 
 	void new_node();
 
+	void delete_node(int index);
+
 	void delete_last_node();
 
 	void solve_with_brute_force();
 
+	void solve_with_dynamic_programming_method();
+
+	void solve_with_branch_and_bound_method();
+
+	void solve_test();
+
 	void set_node_position(int node_index, float x, float y);
+
+	vector<vector<int>> get_nodes();
+
+	void reset_nodes();
 };
 
 #endif
