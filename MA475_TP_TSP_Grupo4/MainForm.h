@@ -124,6 +124,8 @@ namespace MA475TPTSPGrupo4 {
 			this->dataGridNodesData->Name = L"dataGridNodesData";
 			this->dataGridNodesData->Size = System::Drawing::Size(1031, 599);
 			this->dataGridNodesData->TabIndex = 0;
+			this->dataGridNodesData->CellEndEdit += gcnew System::Windows::Forms::DataGridViewCellEventHandler(this, &MainForm::dataGridNodesData_CellEndEdit);
+			this->dataGridNodesData->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &MainForm::dataGridNodesData_KeyPress);
 			// 
 			// btnAddNode
 			// 
@@ -502,6 +504,7 @@ private: System::Void cBUseMultithreading_CheckedChanged(System::Object^ sender,
 	}
 	else
 	{
+		numThreadsToUse->Enabled = false;
 		solver->use_multithreading = false;
 		solver->threads = 1;
 	}
@@ -675,6 +678,13 @@ private: System::Void cBLimitComputingTime_CheckedChanged(System::Object^ sender
 	{
 		txtMaxComputingTime->Enabled = false;
 	}
+}
+private: System::Void dataGridNodesData_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
+	
+}
+private: System::Void dataGridNodesData_CellEndEdit(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
+	if (e->ColumnIndex != e->RowIndex)
+		dataGridNodesData[e->RowIndex, e->ColumnIndex]->Value = dataGridNodesData[e->ColumnIndex, e->RowIndex]->Value;
 }
 };
 }
