@@ -25,20 +25,16 @@ vector<int> TSPSolver::nth_permutation(const int i, int n)
     vector<int> fact(i);
     vector<int> permutation(i);
 
-    // compute factorial numbers
     fact[k] = 1;
     while (++k < i)
         fact[k] = fact[k - 1] * k;
 
-    // compute factorial code
     for (k = 0; k < i; ++k)
     {
         permutation[k] = n / fact[i - 1 - k];
         n = n % fact[i - 1 - k];
     }
 
-    // readjust values to obtain the permutation
-    // start from the end and check if preceding values are lower
     for (k = i - 1; k > 0; --k)
         for (j = k - 1; j >= 0; --j)
             if (permutation[j] <= permutation[k])
@@ -49,7 +45,6 @@ vector<int> TSPSolver::nth_permutation(const int i, int n)
 
 void TSPSolver::brute_force(int init_point)
 {
-    // store all vertex apart from source vertex
     vector<int> vertex;
     for (int i = 0; i < nodes.size(); i++)
         if (i != init_point)
@@ -70,10 +65,8 @@ void TSPSolver::evaluate_permutation(vector<int> permutation, int init_point, in
 
     currentRoute.push_back(init_point);
 
-    // store current Path weight(cost)
     int current_pathweight = 0;
 
-    // compute current path weight
     int k = init_point;
     for (int i = 0; i < permutation.size(); i++) {
         current_pathweight += nodes[k][permutation[i]];
@@ -102,10 +95,10 @@ void TSPSolver::evaluate_permutation(vector<int> permutation, int init_point, in
 
     currentRoute.push_back(init_point);
 
-    // store current Path weight(cost)
+    // Store current path cost
     int current_pathweight = 0;
 
-    // compute current path weight
+    // Calculate current path weight
     int k = init_point;
     for (int i = 0; i < permutation.size(); i++) {
         current_pathweight += nodes[k][permutation[i]];
@@ -282,17 +275,11 @@ void TSPSolver::branch_and_bound_method(int current_bound, int current_weight, i
 {
     if (level == nodes.size())
     {
-        // check if there is an edge from last vertex in
-        // path back to the first vertex
         if (nodes[current_path[level - 1]][current_path[0]] != 0)
         {
-            // curr_res has the total weight of the
-            // solution we got
             int curr_res = current_weight +
                 nodes[current_path[level - 1]][current_path[0]];
 
-            // Update final result and final path if
-            // current result is better.
             if (curr_res < optimal_routes_cost)
             {
                 for (int i = 0; i < nodes.size(); i++)
@@ -304,21 +291,14 @@ void TSPSolver::branch_and_bound_method(int current_bound, int current_weight, i
         return;
     }
 
-    // for any other level iterate for all vertices to
-    // build the search space tree recursively
     for (int i = 0; i < nodes.size(); i++)
     {
-        // Consider next vertex if it is not same (diagonal
-        // entry in adjacency matrix and not visited
-        // already)
         if (nodes[current_path[level - 1]][i] != 0 &&
             visited[i] == false)
         {
             int temp = current_bound;
             current_weight += nodes[current_path[level - 1]][i];
 
-            // different computation of curr_bound for
-            // level 2 from the other levels
             if (level == 1)
                 current_bound -= ((first_min_path(current_path[level - 1]) +
                     first_min_path(i)) / 2);
@@ -326,22 +306,15 @@ void TSPSolver::branch_and_bound_method(int current_bound, int current_weight, i
                 current_bound -= ((second_min_path(current_path[level - 1]) +
                     first_min_path(i)) / 2);
 
-            // curr_bound + curr_weight is the actual lower bound
-            // for the node that we have arrived on
-            // If current lower bound < final_res, we need to explore
-            // the node further
             if (current_bound + current_weight < optimal_routes_cost)
             {
                 current_path[level] = i;
                 visited[i] = true;
 
-                // call TSPRec for the next level
                 branch_and_bound_method(current_bound, current_weight, level + 1,
                     current_path);
             }
 
-            // Else we have to prune the node by resetting
-            // all changes to curr_weight and curr_bound
             current_weight -= nodes[current_path[level - 1]][i];
             current_bound = temp;
 
@@ -425,28 +398,18 @@ void TSPSolver::solve_branch_and_bound_method(int init_point)
     visited = vector<bool>(nodes.size(), 0);
     vector<int> current_path(nodes.size() + 1, -1);
 
-    // Calculate initial lower bound for the root node
-    // using the formula 1/2 * (sum of first min +
-    // second min) for all edges.
-    // Also initialize the curr_path and visited array
     int current_bound = 0;
 
-    // Compute initial bound
     for (int i = 0; i < nodes.size(); i++)
         current_bound += (first_min_path(i) +
             second_min_path(i));
 
-    // Rounding off the lower bound to an integer
     current_bound = (current_bound & 1) ? current_bound / 2 + 1 :
         current_bound / 2;
 
-    // We start at vertex 1 so the first vertex
-    // in curr_path[] is 0
     visited[init_point] = true;
     current_path[0] = init_point;
 
-    // Call to TSPRec for curr_weight equal to
-    // 0 and level 1
     branch_and_bound_method(current_bound, 0, 1, current_path);
 }
 
@@ -492,40 +455,35 @@ void TSPSolver::solve_approximated_prim_method(int init_point)
 
 vector<vector<int>> TSPSolver::prim()
 {
-    // uso una copia de adyacencia porque necesito eliminar columnas
     vector< vector<int> > adyacencia = nodes;
-    vector< vector<int> > arbol(nodes.size());
+    vector< vector<int> > tree(nodes.size());
     vector<int> markedLines;
     vector<int> ::iterator vectorIterator;
 
-    // Inicializo las distancias del arbol en INF.
     for (int i = 0; i < nodes.size(); i++)
-        arbol[i] = vector<int>(nodes.size(), -1);
+        tree[i] = vector<int>(nodes.size(), -1);
 
-    int padre = 0;
-    int hijo = 0;
+    int root = 0;
+    int child = 0;
     while (markedLines.size() + 1 < nodes.size()) {
-        padre = hijo;
-        // Marco la fila y elimino la columna del nodo padre.
-        markedLines.push_back(padre);
+        root = child;
+        markedLines.push_back(root);
         for (int i = 0; i < nodes.size(); i++)
-            adyacencia[i][padre] = INT_MAX;
+            adyacencia[i][root] = INT_MAX;
 
-        // Encuentro la menor distancia entre las filas marcadas.
-        // El nodo padre es la linea marcada y el nodo hijo es la columna del minimo.
         int min = INT_MAX;
         for (vectorIterator = markedLines.begin(); vectorIterator != markedLines.end(); vectorIterator++)
             for (int i = 0; i < nodes.size(); i++)
                 if (min > adyacencia[*vectorIterator][i]) {
                     min = adyacencia[*vectorIterator][i];
-                    padre = *vectorIterator;
-                    hijo = i;
+                    root = *vectorIterator;
+                    child = i;
                 }
 
-        arbol[padre][hijo] = min;
-        arbol[hijo][padre] = min;
+        tree[root][child] = min;
+        tree[child][root] = min;
     }
-    return arbol;
+    return tree;
 }
 
 vector<vector<int>> TSPSolver::get_optimal_routes_result()
