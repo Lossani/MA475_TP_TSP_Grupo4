@@ -490,6 +490,7 @@ private: System::Void cBShowGraphicsForm_CheckedChanged(System::Object^ sender, 
 		btnAddNode->Enabled = true;
 		txtNewNodeName->Enabled = true;
 		graphicsForm->Hide();
+		dataGridNodesData->Enabled = true;
 	}
 }
 private: System::Void cBUseMultithreading_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
