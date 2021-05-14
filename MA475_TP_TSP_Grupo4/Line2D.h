@@ -35,7 +35,7 @@ public:
 	float get_medium_y();
 
 	virtual void draw(Graphics^ graphics);
-	virtual void draw(Graphics^ graphics, String^ caption);
+	virtual void draw(Graphics^ graphics, String^ caption, Pen^ color);
 };
 
 #endif

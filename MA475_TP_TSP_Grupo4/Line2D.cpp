@@ -73,12 +73,12 @@ float Line2D::get_medium_y()
 
 void Line2D::draw(Graphics^ graphics)
 {
-	graphics->DrawLine(gcnew Pen(Color::Aqua), point1.x, point1.y, point2.x, point2.y);
+	graphics->DrawLine(gcnew Pen(Color::Blue), point1.x, point1.y, point2.x, point2.y);
 }
 
-void Line2D::draw(Graphics^ graphics, String^ caption)
+void Line2D::draw(Graphics^ graphics, String^ caption, Pen^ color)
 {
-	graphics->DrawLine(gcnew Pen(Color::Aqua), point1.x, point1.y, point2.x, point2.y);
-	graphics->DrawString(caption, gcnew System::Drawing::Font(L"Gill Sans MT", 8.0F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-		static_cast<System::Byte>(0)), Brushes::Chocolate, Rectangle(get_medium_x(), get_medium_y(), 2000, 2000));
+	graphics->DrawLine(color, point1.x, point1.y, point2.x, point2.y);
+	graphics->DrawString(caption, gcnew System::Drawing::Font(L"Gill Sans MT", 8.0F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+		static_cast<System::Byte>(0)), Brushes::DarkRed, Rectangle(get_medium_x(), get_medium_y(), 2000, 2000));
 }

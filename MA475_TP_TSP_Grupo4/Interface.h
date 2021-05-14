@@ -33,7 +33,6 @@ private:
 
 	NodePointer2D* init_node_pointer;
 	NodePointer2D* finish_node_pointer;
-	String^ texto;
 
 	bool following_node_on = false;
 	int node_to_follow = -1;
@@ -44,6 +43,8 @@ public:
 	Interface();
 	Interface(TSPSolver* solver_instance);
 	~Interface();
+
+	bool show_result_path_only = true;
 
 	void draw(Graphics^ graphics);
 
@@ -62,14 +63,6 @@ public:
 	void delete_node(int index);
 
 	void delete_last_node();
-
-	void solve_with_brute_force();
-
-	void solve_with_dynamic_programming_method();
-
-	void solve_with_branch_and_bound_method();
-
-	void solve_test();
 
 	void set_node_position(int node_index, float x, float y);
 

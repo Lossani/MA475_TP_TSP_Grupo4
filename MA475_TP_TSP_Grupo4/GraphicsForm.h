@@ -23,7 +23,7 @@ namespace MA475TPTSPGrupo4 {
 	private: System::Windows::Forms::Button^ btnAddNode;
 	private: System::Windows::Forms::Button^ btnUndoNode;
 	private: System::Windows::Forms::PictureBox^ pBGraphicNodes;
-	private: System::Windows::Forms::Button^ btnCalculateRoute;
+
 
 
 		   Interface^ interface;
@@ -86,7 +86,6 @@ namespace MA475TPTSPGrupo4 {
 			this->drawingTimer = (gcnew System::Windows::Forms::Timer(this->components));
 			this->btnAddNode = (gcnew System::Windows::Forms::Button());
 			this->btnUndoNode = (gcnew System::Windows::Forms::Button());
-			this->btnCalculateRoute = (gcnew System::Windows::Forms::Button());
 			this->pBGraphicNodes = (gcnew System::Windows::Forms::PictureBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pBGraphicNodes))->BeginInit();
 			this->SuspendLayout();
@@ -119,18 +118,6 @@ namespace MA475TPTSPGrupo4 {
 			this->btnUndoNode->UseVisualStyleBackColor = true;
 			this->btnUndoNode->Click += gcnew System::EventHandler(this, &GraphicsForm::btnUndoNode_Click);
 			// 
-			// btnCalculateRoute
-			// 
-			this->btnCalculateRoute->AutoSize = true;
-			this->btnCalculateRoute->Location = System::Drawing::Point(370, 12);
-			this->btnCalculateRoute->Name = L"btnCalculateRoute";
-			this->btnCalculateRoute->Size = System::Drawing::Size(173, 48);
-			this->btnCalculateRoute->TabIndex = 2;
-			this->btnCalculateRoute->Text = L"Calcular Ruta Optima";
-			this->btnCalculateRoute->UseVisualStyleBackColor = true;
-			this->btnCalculateRoute->Visible = false;
-			this->btnCalculateRoute->Click += gcnew System::EventHandler(this, &GraphicsForm::btnCalculateRoute_Click);
-			// 
 			// pBGraphicNodes
 			// 
 			this->pBGraphicNodes->Anchor = System::Windows::Forms::AnchorStyles::None;
@@ -148,7 +135,6 @@ namespace MA475TPTSPGrupo4 {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(954, 575);
 			this->Controls->Add(this->pBGraphicNodes);
-			this->Controls->Add(this->btnCalculateRoute);
 			this->Controls->Add(this->btnUndoNode);
 			this->Controls->Add(this->btnAddNode);
 			this->Name = L"GraphicsForm";
@@ -186,12 +172,6 @@ namespace MA475TPTSPGrupo4 {
 private: System::Void btnUndoNode_Click(System::Object^ sender, System::EventArgs^ e) {
 	interface->delete_last_node();
 	update_node_table();
-}
-private: System::Void btnCalculateRoute_Click(System::Object^ sender, System::EventArgs^ e) {
-	interface->solve_with_brute_force();
-	//interface->solve_with_dynamic_programming_method();
-	//interface->solve_with_branch_and_bound_method();
-	interface->solve_test();
 }
 private: System::Void pBGraphicNodes_MouseMove(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
 	interface->drawer_iterator(buffer->Graphics, e->X, e->Y, false);

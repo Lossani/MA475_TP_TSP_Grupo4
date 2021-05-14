@@ -39,6 +39,8 @@ namespace MA475TPTSPGrupo4 {
 	private: System::Windows::Forms::ComboBox^ comboBoxDeleteNode;
 	private: System::Windows::Forms::Label^ lblDeleteNodeSelection;
 	private: System::Windows::Forms::ComboBox^ comboBoxInitNode;
+	private: System::Windows::Forms::Button^ btnHelp;
+	private: System::Windows::Forms::CheckBox^ cBShowResultPath;
 	private: System::Windows::Forms::Label^ lblInitPoint;
 
 	public:
@@ -110,6 +112,8 @@ namespace MA475TPTSPGrupo4 {
 			this->comboBoxInitNode = (gcnew System::Windows::Forms::ComboBox());
 			this->lblInitPoint = (gcnew System::Windows::Forms::Label());
 			this->lblNodeTable = (gcnew System::Windows::Forms::Label());
+			this->btnHelp = (gcnew System::Windows::Forms::Button());
+			this->cBShowResultPath = (gcnew System::Windows::Forms::CheckBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridNodesData))->BeginInit();
 			this->groupGeneralOptions->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numThreadsToUse))->BeginInit();
@@ -177,6 +181,7 @@ namespace MA475TPTSPGrupo4 {
 			// 
 			// groupGeneralOptions
 			// 
+			this->groupGeneralOptions->Controls->Add(this->cBShowResultPath);
 			this->groupGeneralOptions->Controls->Add(this->txtMaxComputingTime);
 			this->groupGeneralOptions->Controls->Add(this->cBLimitComputingTime);
 			this->groupGeneralOptions->Controls->Add(this->numThreadsToUse);
@@ -336,11 +341,35 @@ namespace MA475TPTSPGrupo4 {
 			this->lblNodeTable->TabIndex = 10;
 			this->lblNodeTable->Text = L"Tabla de adyacencia:";
 			// 
+			// btnHelp
+			// 
+			this->btnHelp->Location = System::Drawing::Point(1229, 1);
+			this->btnHelp->Name = L"btnHelp";
+			this->btnHelp->Size = System::Drawing::Size(86, 25);
+			this->btnHelp->TabIndex = 11;
+			this->btnHelp->Text = L"Ayuda";
+			this->btnHelp->UseVisualStyleBackColor = true;
+			this->btnHelp->Click += gcnew System::EventHandler(this, &MainForm::btnHelp_Click);
+			// 
+			// cBShowResultPath
+			// 
+			this->cBShowResultPath->AutoSize = true;
+			this->cBShowResultPath->Checked = true;
+			this->cBShowResultPath->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->cBShowResultPath->Location = System::Drawing::Point(6, 43);
+			this->cBShowResultPath->Name = L"cBShowResultPath";
+			this->cBShowResultPath->Size = System::Drawing::Size(238, 17);
+			this->cBShowResultPath->TabIndex = 13;
+			this->cBShowResultPath->Text = L"Mostrar solo camino óptimo luego de calcular\r\n";
+			this->cBShowResultPath->UseVisualStyleBackColor = true;
+			this->cBShowResultPath->CheckedChanged += gcnew System::EventHandler(this, &MainForm::cBShowResultPath_CheckedChanged);
+			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1327, 639);
+			this->Controls->Add(this->btnHelp);
 			this->Controls->Add(this->lblNodeTable);
 			this->Controls->Add(this->groupOperationOptions);
 			this->Controls->Add(this->groupGeneralOptions);
@@ -409,6 +438,8 @@ namespace MA475TPTSPGrupo4 {
 				dataGridNodesData[nodeCount, nodeCount]->ReadOnly = true;
 				dataGridNodesData[nodeCount, nodeCount]->Value = "0";
 
+				dataGridNodesData->Columns[dataGridNodesData->Columns->Count - 1]->SortMode = DataGridViewColumnSortMode::NotSortable;
+
 				txtNewNodeName->Text = "Nodo " + (newNode + 1);
 			}
 
@@ -423,7 +454,7 @@ namespace MA475TPTSPGrupo4 {
 						vector<int> rowData;
 						for (int j = 0; j < dataGridNodesData->Columns->Count; ++j)
 						{
-							int number = Convert::ToInt32(dataGridNodesData[i, j]->Value);
+							int number = Convert::ToInt32(dataGridNodesData[j, i]->Value);
 
 							if (number < 0)
 								return false;
@@ -454,9 +485,11 @@ namespace MA475TPTSPGrupo4 {
 		update_combobox_node_list();
 	}
 	private: System::Void btnResetNodeData_Click(System::Object^ sender, System::EventArgs^ e) {
+		solver->reset();
 		main_interface->reset_nodes();
 		reset_node_table();
 		update_combobox_node_list();
+		txtNewNodeName->Text = "Nodo 1";
 	}
 private: System::Void btnSolveBruteForce_Click(System::Object^ sender, System::EventArgs^ e) {
 
@@ -476,6 +509,7 @@ private: System::Void cBShowGraphicsForm_CheckedChanged(System::Object^ sender, 
 				return;
 			}
 		}
+		solver->reset();
 		reset_node_table();
 		update_combobox_node_list();
 		graphicsForm->Show();
@@ -487,7 +521,7 @@ private: System::Void cBShowGraphicsForm_CheckedChanged(System::Object^ sender, 
 	else
 	{
 		main_interface->reset_nodes();
-		reset_node_table();
+		//reset_node_table();
 		update_combobox_node_list();
 		btnAddNode->Enabled = true;
 		txtNewNodeName->Enabled = true;
@@ -588,6 +622,12 @@ private: System::Void btnDeleteNode_Click(System::Object^ sender, System::EventA
 				   return;
 			   }
 
+			   if (!solver->is_a_valid_node(comboBoxInitNode->SelectedIndex, comboBoxInitNode->SelectedIndex))
+			   {
+				   MessageBox::Show("El nodo inicial es inválido. Revise que tenga al menos una entrada y salida de nodos diferentes.");
+				   return;
+			   }
+
 			   String^ final_text = "";
 			   switch (method_index)
 			   {
@@ -614,17 +654,17 @@ private: System::Void btnDeleteNode_Click(System::Object^ sender, System::EventA
 			   break;
 			   case 4:
 			   default:
-				   solver->solve_brute_force(comboBoxInitNode->SelectedIndex);
-				   final_text += get_results(comboBoxSolveMethod->Items[0]->ToString());
-
-				   solver->solve_dynamic_programming_method(comboBoxInitNode->SelectedIndex);
-				   final_text += get_results(comboBoxSolveMethod->Items[1]->ToString());
-
 				   solver->solve_branch_and_bound_method(comboBoxInitNode->SelectedIndex);
 				   final_text += get_results(comboBoxSolveMethod->Items[2]->ToString());
 
 				   solver->solve_approximated_prim_method(comboBoxInitNode->SelectedIndex);
 				   final_text += get_results(comboBoxSolveMethod->Items[3]->ToString());
+
+				   solver->solve_dynamic_programming_method(comboBoxInitNode->SelectedIndex);
+				   final_text += get_results(comboBoxSolveMethod->Items[1]->ToString());
+
+				   solver->solve_brute_force(comboBoxInitNode->SelectedIndex);
+				   final_text += get_results(comboBoxSolveMethod->Items[0]->ToString());
 
 				   break;
 			   }
@@ -683,8 +723,22 @@ private: System::Void dataGridNodesData_KeyPress(System::Object^ sender, System:
 	
 }
 private: System::Void dataGridNodesData_CellEndEdit(System::Object^ sender, System::Windows::Forms::DataGridViewCellEventArgs^ e) {
-	if (e->ColumnIndex != e->RowIndex)
-		dataGridNodesData[e->RowIndex, e->ColumnIndex]->Value = dataGridNodesData[e->ColumnIndex, e->RowIndex]->Value;
+	/*if (e->ColumnIndex != e->RowIndex)
+		dataGridNodesData[e->RowIndex, e->ColumnIndex]->Value = dataGridNodesData[e->ColumnIndex, e->RowIndex]->Value;*/
+}
+private: System::Void btnHelp_Click(System::Object^ sender, System::EventArgs^ e) {
+	MessageBox::Show("En Fuerza Bruta se prioriza comunicar la mayor cantidad de nodos a conectar, en caso haya nodos aislados o con falta de ciertos caminos.\n\n\nEl método de programación dinámica, por su misma naturaleza, solo contabilizará la ruta con menos nodos posibles, en caso no todos estén conectados.\n\n\nIngrese los caminos entre nodos, si tiene uno que no existe ingrese un 0 o un -1.\n\n\nSi desea usar multiples hilos de procesado de sus núcleos de su procesador en Fuerza Bruta, habilite la opción multithreading y seleccione los hilos a emplear.\n\n\nSi desea limitar el máximo tiempo que pueda tomar cualquier algoritmo, seleccione limitar tiempo e ingrese un tiempo en milisegundos no menor a 1000 (1 segundo).\n\n\nPuede utilizar el modo gráfico para generar una tabla de adyacencia arbitraria.");
+
+}
+private: System::Void cBShowResultPath_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+	if (cBShowResultPath->Checked)
+	{
+		main_interface->show_result_path_only = true;
+	}
+	else
+	{
+		main_interface->show_result_path_only = false;
+	}
 }
 };
 }
